@@ -33,7 +33,7 @@ def filter_data(data, visa_type=None, location=None, status=None, new_renewal=No
 
 
 if __name__ == "__main__":
-    data = parse_data('../retriever/data/')
+    data = parse_data('../data/')
 
     visa_type = 'h1'
     location = 'beijing'

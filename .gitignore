@@ -105,6 +105,7 @@ venv.bak/
 
 # data
 src/retriever/data/*.txt
+data/*.txt
 *.log
 
 .idea/*

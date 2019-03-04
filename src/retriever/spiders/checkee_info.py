@@ -2,10 +2,11 @@ from __future__ import print_function
 import scrapy
 from scrapy.selector import Selector
 from scrapy import Request
-
+from os.path import dirname, realpath, join
 import re
 import codecs
 
+DATA_DIR = join(dirname(realpath(__file__)), '..', '..', '..', 'data')
 KEYS = ['visa', 'type', 'loc', 'major', 'status', 'check_date', 'complete_date', 'waiting_days']
 
 
@@ -13,7 +14,7 @@ class CheckeeInfoSpider(scrapy.Spider):
     name = 'checkee'
 
     def __init__(self):
-        super(CheckeeInfoSpider, self).__init__(name='checkee')
+        super(CheckeeInfoSpider, self).__init__()
         self.url_base = "https://www.checkee.info/"
 
     def start_requests(self):
@@ -72,8 +73,7 @@ class CheckeeInfoSpider(scrapy.Spider):
                     print("potential re match error: " + len(trs) + ": " + entry)
                 else:
                     pass
-        with codecs.open('./data/' + url_item + '.txt', 'w', encoding='utf-8') as result_file:
-            # result_file.write(json.dumps(entries))
+        with codecs.open(join(DATA_DIR, url_item + '.txt'), 'w', encoding='utf-8') as result_file:
             result_file.write(','.join(KEYS) + '\n')
             for entry in entries:
                 result_file.write(','.join([entry[k] for k in KEYS]) + '\n')

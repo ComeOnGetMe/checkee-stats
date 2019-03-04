@@ -2,7 +2,7 @@
 
 US visa administrative processing time data analytics in Python.
 
-* [Data source](checkee.info)
+* [Data source](https://checkee.info)
 * Retriever - scrapy
 * Analyzer (histogram) - numpy and matplotlib
 
