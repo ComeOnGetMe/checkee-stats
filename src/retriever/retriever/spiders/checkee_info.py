@@ -1,19 +1,23 @@
+from __future__ import print_function
 import scrapy
 from scrapy.selector import Selector
-from scrapy import Request, signals
-from scrapy.xlib.pydispatch import dispatcher
+from scrapy import Request
 
 import re
-import json
-from copy import deepcopy
+import codecs
+
+KEYS = ['visa', 'type', 'loc', 'major', 'status', 'check_date', 'complete_date', 'waiting_days']
+
 
 class CheckeeInfoSpider(scrapy.Spider):
-    name = "checkee"
+    name = 'checkee'
+
     def __init__(self):
+        super(CheckeeInfoSpider, self).__init__(name='checkee')
         self.url_base = "https://www.checkee.info/"
 
     def start_requests(self):
-        yield Request(url = self.url_base, callback = self.parse)
+        yield Request(url=self.url_base, callback=self.parse)
 
     def parse(self, response):
         selector = Selector(response)
@@ -23,7 +27,7 @@ class CheckeeInfoSpider(scrapy.Spider):
                 item = item[2:]
             url = self.url_base + item
             # note the lambda capture to not bind url_item to the outer scope
-            yield Request(url, callback = lambda response, url_item = item.split('=')[1]: self.parse_checkee_table(response, url_item))
+            yield Request(url, callback=lambda resp, iurl=item.split('=')[1]: self.parse_checkee_table(resp, iurl))
 
     def parse_checkee_table(self, response, url_item):
         selector = Selector(response)
@@ -54,19 +58,22 @@ class CheckeeInfoSpider(scrapy.Spider):
                 trs = re.findall(r'<td>([^<]*?)</td>', entry)
                 if len(trs) == 9:
                     info = {
-                        "visa":          trs[1],
-                        "type":          trs[2],
-                        "loc":           trs[3],
-                        "major":         trs[4],
-                        "status":        trs[5],
-                        "check_date":    trs[6],
+                        "visa": trs[1],
+                        "type": trs[2],
+                        "loc": trs[3],
+                        "major": trs[4],
+                        "status": trs[5],
+                        "check_date": trs[6],
                         "complete_date": trs[7],
-                        "waiting_days":  trs[8]
+                        "waiting_days": trs[8]
                     }
                     entries.append(info)
-                elif len(trs) > 6 and len(trs) < 12:
+                elif 12 > len(trs) > 6:
                     print("potential re match error: " + len(trs) + ": " + entry)
                 else:
                     pass
-        with open('./data/' + url_item + '.txt', 'w') as result_file:
-            result_file.write(json.dumps(entries))
+        with codecs.open('./data/' + url_item + '.txt', 'w', encoding='utf-8') as result_file:
+            # result_file.write(json.dumps(entries))
+            result_file.write(','.join(KEYS) + '\n')
+            for entry in entries:
+                result_file.write(','.join([entry[k] for k in KEYS]) + '\n')
