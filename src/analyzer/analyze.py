@@ -11,7 +11,7 @@ def parse_data(folder):
     data = []
     for filename in glob.glob(os.path.join(folder, '*.txt')):
         with open(filename, 'r') as infile:
-            reader = csv.DictReader(infile)
+            reader = csv.DictReader(infile, delimiter='\001')
             data.extend(list(reader))
     return data
 
@@ -33,13 +33,13 @@ def filter_data(data, visa_type=None, location=None, status=None, new_renewal=No
 
 
 if __name__ == "__main__":
-    data = parse_data('../data/')
+    data = parse_data('../../data/')
 
     visa_type = 'h1'
     location = 'beijing'
     status = 'clear'
     new_renewal = 'new'
-    since = '2018-10-01'
+    since = '2008-10-01'
 
     filtered = filter_data(data,
                            visa_type=visa_type,

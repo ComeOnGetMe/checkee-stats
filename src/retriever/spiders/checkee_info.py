@@ -1,10 +1,12 @@
 from __future__ import print_function
-import scrapy
-from scrapy.selector import Selector
-from scrapy import Request
+
 from os.path import dirname, realpath, join
 import re
 import codecs
+
+import scrapy
+from scrapy.selector import Selector
+from scrapy import Request
 
 DATA_DIR = join(dirname(realpath(__file__)), '..', '..', '..', 'data')
 KEYS = ['visa', 'type', 'loc', 'major', 'status', 'check_date', 'complete_date', 'waiting_days']
@@ -74,6 +76,6 @@ class CheckeeInfoSpider(scrapy.Spider):
                 else:
                     pass
         with codecs.open(join(DATA_DIR, url_item + '.txt'), 'w', encoding='utf-8') as result_file:
-            result_file.write(','.join(KEYS) + '\n')
+            result_file.write('\001'.join(KEYS) + '\n')
             for entry in entries:
-                result_file.write(','.join([entry[k] for k in KEYS]) + '\n')
+                result_file.write('\001'.join([entry[k] for k in KEYS]) + '\n')
