@@ -76,6 +76,6 @@ class CheckeeInfoSpider(scrapy.Spider):
                 else:
                     pass
         with codecs.open(join(DATA_DIR, url_item + '.txt'), 'w', encoding='utf-8') as result_file:
-            result_file.write('\001'.join(KEYS) + '\n')
+            result_file.write('\t'.join(KEYS) + '\n')
             for entry in entries:
-                result_file.write('\001'.join([entry[k] for k in KEYS]) + '\n')
+                result_file.write('\t'.join([entry[k] for k in KEYS]) + '\n')

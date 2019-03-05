@@ -7,20 +7,6 @@ DATA_DIR = join(dirname(realpath(__file__)), '..', '..', 'data')
 TABLE_NAME = 'CHECKEE'
 
 
-class UTF8Recoder:
-    """
-    Iterator that reads an encoded stream and reencodes the input to UTF-8
-    """
-    def __init__(self, f, encoding):
-        self.reader = codecs.getreader(encoding)(f)
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        return self.reader.next().encode("utf-8")
-
-
 def check_table_exists(cur, name):
     cur.execute("""
     SELECT name
@@ -39,7 +25,7 @@ if __name__ == '__main__':
     for filepath in glob.glob(join(DATA_DIR, '*.txt')):
         with codecs.open(filepath, 'r', encoding='utf-8') as f:
             first_line = f.readline()
-            keys = first_line.strip().split('\001')
+            keys = first_line.strip().split('\t')
             break
     try:
         print(keys)
@@ -54,7 +40,7 @@ if __name__ == '__main__':
     for filepath in glob.glob(join(DATA_DIR, '*.txt')):
         with codecs.open(filepath, 'r', encoding='utf-8') as f:
             f.readline()
-            to_db = [tuple(line.strip().split('\001')) for line in f.readlines()]
+            to_db = [tuple(line.strip().split('\t')) for line in f.readlines()]
         cur.executemany("""
         INSERT INTO {} ({}) VALUES ({});
         """.format(TABLE_NAME, ','.join(keys), ','.join(['?'] * len(keys))), to_db)
