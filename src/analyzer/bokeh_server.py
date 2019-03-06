@@ -47,7 +47,6 @@ def select_checkees():
     status = status_sel.value
     atype = app_type_sel.value
 
-    print(date_start, type(date_start))
     selected = checkee[
         (pd.to_datetime(checkee.check_date).between(date_start, date_end)) &
         (checkee['loc'].isin(emb)) &
