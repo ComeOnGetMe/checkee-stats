@@ -4,7 +4,7 @@ import pandas as pd
 
 from bokeh.plotting import figure
 from bokeh.layouts import layout, column
-from bokeh.models import ColumnDataSource, Div
+from bokeh.models import ColumnDataSource, Div, HoverTool
 from bokeh.models.widgets import DateRangeSlider, Select, MultiSelect
 from bokeh.io import curdoc
 
@@ -12,7 +12,7 @@ from preproc import read_data_batch, preproc_data
 
 
 checkee = read_data_batch()
-preproc_data(checkee)
+checkee = preproc_data(checkee)
 
 axis_map = checkee.columns
 min_date = checkee.check_date.min().date()
@@ -30,14 +30,25 @@ status_sel = Select(title="Application status", value='All', options=all_status)
 app_type_sel = Select(title="Type of application", value='All', options=all_app_types)
 
 # Create Column Data Source that will be used by the plot
-source = ColumnDataSource(data=dict(x=[], y=[], ID=[]))
+source = ColumnDataSource(data=dict(x=[], y=[], ID=[], complete_date=[]))
 
 TOOLTIPS = [
     ("id", "@ID"),
+    ("check date", "@x{%F}"),
+    ("complete date", "@complete_date{%F}"),
+    ("waiting days", "@y"),
 ]
 
-p = figure(plot_height=600, plot_width=700, title="", toolbar_location='right', tooltips=TOOLTIPS)
+p = figure(plot_height=600, plot_width=700, title="",
+           toolbar_location='right', x_axis_type='datetime')
 p.circle(x="x", y="y", source=source, size=7, line_color=None)#, fill_alpha="alpha")
+p.add_tools(HoverTool(
+    tooltips=TOOLTIPS,
+    formatters={
+        'x': 'datetime',
+        'complete_date': 'datetime'
+    }
+))
 
 
 def select_checkees():
@@ -66,6 +77,7 @@ def update():
         x=pd.to_datetime(df.check_date),
         y=df.waiting_days,
         ID=df.id,
+        complete_date=pd.to_datetime(df.complete_date),
     )
 
 

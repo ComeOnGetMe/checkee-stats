@@ -4,7 +4,7 @@ US visa administrative processing time data analytics in Python.
 
 * [Data source](https://checkee.info)
 * Retriever - scrapy
-* Analyzer (histogram) - numpy and matplotlib
+* Analyzer - powered by [bokeh](https://bokeh.pydata.org/en/latest/)
 
 ### How to use
 
@@ -13,11 +13,10 @@ Scrape latest checkee.info reports
 cd src/retriever
 scrapy crawl checkee
 ```
-This will populate src/retriever/data folder.
+This will populate the `data` folder.
 
-Customize filter criteria (edit analyze.py) and run analyze
+Then start the visualization server by
 ```
 cd src/analyzer
-./analyze.py
+bokeh serve --show bokeh_server.py
 ```
-This will filter from src/retriever/data folder and produce a histogram of the processing time of filtered entries.

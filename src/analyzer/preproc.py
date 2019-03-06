@@ -42,16 +42,21 @@ def read_data_batch():
 
 
 def preproc_data(df):
-    df.waiting_days = df.waiting_days.astype(int)
-    df.waiting_days = df.waiting_days.clip(upper=500, lower=0)
     df.check_date = pd.to_datetime(df.check_date)
-    df.complete_date[df.complete_date == '0000-00-00'] = str(date.today())
+    dum_rows = df.complete_date == '0000-00-00'
+    df.complete_date[dum_rows] = str(date.today())
     df.complete_date = pd.to_datetime(df.complete_date)
+    df.waiting_days = df.waiting_days.astype(int)
+    df.waiting_days[dum_rows] = (df[dum_rows].complete_date - df[dum_rows].check_date).dt.days
+
+    df = df[df.type.isin({'New', 'Renewal'})]
+    df = df[df.waiting_days < 500]
+    df.waiting_days = df.waiting_days.clip(upper=300, lower=0)
+    return df
 
 
 def main():
-    data = read_data_batch()
-    df = pd.DataFrame.from_dict(data)
+    df = read_data_batch()
     preproc_data(df)
     df.to_csv(join(DATA_DIR, 'proced.csv'), encoding='utf-8')
     print("Saved.")
