@@ -2,6 +2,7 @@ import glob
 import codecs
 import csv
 from os.path import realpath, dirname, join, split
+from datetime import date
 
 import pandas as pd
 
@@ -36,12 +37,16 @@ def read_data_batch():
                 all_data['id'].append('{}-{}'.format(month, idx))
 
     print("Total # of records: ", len(all_data[keys[0]]))
-    return all_data
+    df = pd.DataFrame.from_dict(all_data)
+    return df
 
 
 def preproc_data(df):
     df.waiting_days = df.waiting_days.astype(int)
     df.waiting_days = df.waiting_days.clip(upper=500, lower=0)
+    df.check_date = pd.to_datetime(df.check_date)
+    df.complete_date[df.complete_date == '0000-00-00'] = str(date.today())
+    df.complete_date = pd.to_datetime(df.complete_date)
 
 
 def main():
