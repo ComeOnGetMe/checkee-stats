@@ -18,5 +18,5 @@ This will populate the `data` folder.
 Then start the visualization server by
 ```
 cd src/analyzer
-bokeh serve --show bokeh_server.py
+bokeh serve --show checkee.py
 ```
